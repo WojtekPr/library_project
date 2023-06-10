@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
-def tasklist(request):
-    return HttpResponse("TEST")
+def HomePage(request):
+    context  = {}
+    return render(request, 'accounts/home.html', context)
 
 def registerPage(request):
     context = {}
