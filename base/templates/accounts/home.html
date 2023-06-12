@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Homepage - Biblioteka</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles1.css' %}">
+</head>
+<body>
+    <div class="search">
+        <h1>Welcome to the Library</h1>
+        <form method="get">
+            <div class="inputField">
+                <input name="book-name" type="search" id="books">
+                <label for="books">Search for books</label>
+            </div>
+            <button class="btn1" type="submit">Search</button>
+        </form>
+    </div>
+    <div id="result">
+        <h1>Books:</h1>
+        <ul class="book-list">
+            {% for book in books %}
+            <li class="book-item">
+                <img src="{{ book.image }}" alt="{{ book.title }}" width="100">
+                <div class="book-details">
+                    <h2 class="book-title">{{ book.title }}</h2>
+                    <p class="book-authors">Author(s): {{ book.authors|join:", " }}</p>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
