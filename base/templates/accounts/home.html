@@ -25,6 +25,13 @@
                 <div class="book-details">
                     <h2 class="book-title">{{ book.title }}</h2>
                     <p class="book-authors">Author(s): {{ book.authors|join:", " }}</p>
+                    <form method="post" action="{% url 'save_book' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="title" value="{{ book.title }}">
+                        <input type="hidden" name="authors" value="{{ book.authors }}">
+                        <input type="hidden" name="image" value="{{ book.image }}">
+                        <button class="btn1" type="submit">Save Book</button>
+                    </form>
                 </div>
             </li>
             {% endfor %}
