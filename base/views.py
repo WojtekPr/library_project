@@ -2,10 +2,40 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login, logout
+from django.templatetags.static import static
+import requests
 
 
 def HomePage(request):
-    return render(request, 'accounts/home.html')
+    context = {}  
+    api_key = "AIzaSyAr6_9amf0g0HAU5z8wP0jg2GwYtNX4g1k"
+    query = request.GET.get("book-name")
+    response=requests.get(f'https://www.googleapis.com/books/v1/volumes?q={query}&key={api_key}')
+    data = response.json()
+    
+    if response.status_code == 200:
+        data = response.json()
+        books = []
+
+        # Extract book titles
+        for item in data.get('items', []):
+            volume_info = item.get('volumeInfo', {})
+            title = volume_info.get('title')
+            authors = volume_info.get('authors')
+            image_links = volume_info.get('imageLinks', {})
+            image = image_links.get('thumbnail') if image_links else None
+
+            if title and authors:
+                book = {
+                    'title': title,
+                    'authors': authors,
+                    'image': image
+                }
+                books.append(book)
+
+        context = {'books': books}
+
+    return render(request, 'accounts/home.html',context)
 
 def registerPage(request):
     if request.method=='POST':
