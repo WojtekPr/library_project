@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login, logout
 from django.templatetags.static import static
+
 import requests
 from .models import Book
 
@@ -69,10 +70,11 @@ def loginPage(request):
         user=authenticate(request,username=username,password=pass1)
         if user is not None:
             login(request,user)
-            return redirect('home')
+            return redirect('book_list')
         else:
             return HttpResponse("Login lub hasło niepoprawne")
     return render(request, 'accounts/login.html')
+
 
 def logoutPage(request):
     logout(request)
@@ -105,7 +107,7 @@ def save_book(request):
                 book = Book(title=title, authors=authors, image=image, description=description, language=language, category=category)
                 book.save()
 
-                return redirect('book_list')
+                return redirect('home')
 
     return HttpResponse('Invalid request method.')
 

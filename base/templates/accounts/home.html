@@ -27,18 +27,74 @@
             margin-right: 10px;
         }
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const saveBookButtons = document.querySelectorAll('.save-book-button');
+
+            saveBookButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault(); // Zatrzymaj domyślne zachowanie przycisku
+
+                    const form = button.closest('form');
+                    const url = form.action;
+                    const formData = new FormData(form);
+
+                    fetch(url, {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            // Wyświetl komunikat o powodzeniu
+                            const popup = document.getElementById('popup');
+                            popup.classList.add('show');
+                        } else {
+                            // Obsłuż błąd, jeśli wystąpi
+                        }
+                    })
+                    .catch(error => {
+                        // Obsłuż błąd żądania
+                    });
+                });
+            });
+        });
+    </script>
 </head>
 <body>
+</head>
+<body>
+    <div class="background">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
     <div class="search">
-        <h1>Welcome to the Library</h1>
+        <div class="user_panel">
+            {% if user.is_authenticated %}
+            <span class="username">Zalogowany użytkownik:<strong> {{ user.username }}</strong></span>
+            <a href="/logout">Logout</a>
+            {% else %}
+            <a class="login-link" href="/login">Login</a>
+            {% endif %}
+            <a class="books-button" href="{% url 'book_list' %}">Przejdź do biblioteki</a>
+        </div>
+        
+        <h1>
+            <img class="logo" src="{% static 'images/logo.png' %}" alt="Logo">
+            ADMIN PANEL
+        </h1>
         <form method="get">
             <div class="inputField">
                 <input name="book-name" type="search" id="books">
-                <label for="books">Search for books</label>
+                <!-- <label for="books">Search for books</label> -->
             </div>
             <button class="btn1" type="submit">Search</button>
         </form>
+        
     </div>
+
     <div id="result">
         <h1>Books:</h1>
         <ul class="book-list">
@@ -55,6 +111,7 @@
                         <input type="hidden" name="image" value="{{ book.image }}">
                         <button class="btn1 save-book-button" type="submit">Save Book</button>
                     </form>
+
                 </div>
             </li>
             {% endfor %}

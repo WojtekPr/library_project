@@ -6,31 +6,55 @@
     <link rel="stylesheet" type="text/css" href="{% static 'style-book.css' %}">
 </head>
 <body>
+    <div class="background">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
     <div class="container">
+        <div class="user_panel">
+            {% if user.is_authenticated %}
+        <span class="username">Zalogowany użytkownik:<strong> {{ user.username }}</strong></span>
+        <a href="/logout">Logout</a>
+        {% else %}
+        <a class="login-link" href="/login">Login</a>
+        {% endif %}
+        {% if user.is_superuser %}
         <a class="home-button" href="{% url 'home' %}">Powrót do strony głównej</a>
+        {% endif %}
+        </div>
+        
+    </div>
+        
         <!-- Display saved books -->
-        <h2>Saved Books</h2>
-        <div class="book-list">
-            {% for saved_book in saved_books %}
-            <!-- Display book details from the database -->
-            <div class="book-item">
-                <img src="{{ saved_book.image }}" alt="{{ saved_book.title }}">
-                <div class="book-details">
-                    <h3>{{ saved_book.title }}</h3>
-                    <p>Author(s): {{ saved_book.authors }}</p>
-                    <p>Category: {{ saved_book.category }}</p>
-                    <p>Language: {{ saved_book.language }}</p>
-                    <p>{{ saved_book.description }}</p>
-                    <form method="post" action="{% url 'remove_book' saved_book.id %}">
-                        {% csrf_token %}
-                        <button class="remove-book-button" type="submit">Remove Book</button>
-                    </form>
-                </div>
-            </div>
-            {% empty %}
-            <p>No saved books found.</p>
-            {% endfor %}
+<h2>
+    <img class="logo" src="{% static 'images/logo.png' %}" alt="Logo">
+    <!-- Saved Books -->
+</h2>
+<div class="book-list">
+    {% for saved_book in saved_books %}
+    <!-- Display book details from the database -->
+    <div class="book-item">
+        <img src="{{ saved_book.image }}" alt="{{ saved_book.title }}">
+        <div class="book-details">
+            <h3>{{ saved_book.title }}</h3>
+            <p>Author(s): {{ saved_book.authors }}</p>
+            <p>Category: {{ saved_book.category }}</p>
+            <p>Language: {{ saved_book.language }}</p>
+            <p>{{ saved_book.description }}</p>
+            <form method="post" action="{% url 'remove_book' saved_book.id %}">
+                {% csrf_token %}
+                {% if user.is_superuser %}
+                <button class="remove-book-button" type="submit">Remove Book</button>
+                {% endif %}
+            </form>
         </div>
     </div>
+    {% empty %}
+    <p>No saved books found.</p>
+    {% endfor %}
+</div>
 </body>
 </html>
