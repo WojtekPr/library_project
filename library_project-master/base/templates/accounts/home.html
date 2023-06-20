@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Homepage - Biblioteka</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles1.css' %}">
+    <style>
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+        .popup.show {
+            display: block;
+        }
+        .popup-buttons {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .popup-buttons button {
+            margin-right: 10px;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const saveBookButtons = document.querySelectorAll('.save-book-button');
+
+            saveBookButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault(); // Zatrzymaj domyślne zachowanie przycisku
+
+                    const form = button.closest('form');
+                    const url = form.action;
+                    const formData = new FormData(form);
+
+                    fetch(url, {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            // Wyświetl komunikat o powodzeniu
+                            const popup = document.getElementById('popup');
+                            popup.classList.add('show');
+                        } else {
+                            // Obsłuż błąd, jeśli wystąpi
+                        }
+                    })
+                    .catch(error => {
+                        // Obsłuż błąd żądania
+                    });
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+</head>
+<body>
+    <div class="background">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+    <div class="search">
+        <div class="user_panel">
+            {% if user.is_authenticated %}
+            <span class="username">Zalogowany użytkownik:<strong> {{ user.username }}</strong></span>
+            <a href="/logout">Logout</a>
+            {% else %}
+            <a class="login-link" href="/login">Login</a>
+            {% endif %}
+            <a class="books-button" href="{% url 'book_list' %}">Przejdź do biblioteki</a>
+        </div>
+        
+        <h1>
+            <img class="logo" src="{% static 'images/logo.png' %}" alt="Logo">
+            ADMIN PANEL
+        </h1>
+        <form method="get">
+            <div class="inputField">
+                <input name="book-name" type="search" id="books">
+                <!-- <label for="books">Search for books</label> -->
+            </div>
+            <button class="btn1" type="submit">Search</button>
+        </form>
+        
+    </div>
+
+    <div id="result">
+        <h1>Books:</h1>
+        <ul class="book-list">
+            {% for book in books %}
+            <li class="book-item">
+                <img src="{{ book.image }}" alt="{{ book.title }}" width="100">
+                <div class="book-details">
+                    <h2 class="book-title">{{ book.title }}</h2>
+                    <p class="book-authors">Author(s): {{ book.authors|join:", " }}</p>
+                    <form method="post" action="{% url 'save_book' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="title" value="{{ book.title }}">
+                        <input type="hidden" name="authors" value="{{ book.authors }}">
+                        <input type="hidden" name="image" value="{{ book.image }}">
+                        <button class="btn1 save-book-button" type="submit">Save Book</button>
+                    </form>
+
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    {% if book_saved %}
+    <div class="popup show" id="popup">
+        <p>Book saved successfully!</p>
+        <div class="popup-buttons">
+            <form action="{% url 'index' %}">
+                <button class="btn1" type="submit">Dodawaj dalej</button>
+            </form>
+            <a class="btn1 saved-books-button" href="{% url 'book_list' %}">Przejdź do saved books</a>
+        </div>
+    </div>
+    {% endif %}
+</body>
+</html>
